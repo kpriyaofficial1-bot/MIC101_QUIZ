@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBA MIC101 – Fundamentals of Entrepreneurship Quiz</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#172033}
+.container{max-width:850px;margin:0 auto;padding:20px}
+.card{background:#fff;border-radius:16px;padding:22px;margin:16px 0;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+h1{font-size:26px;margin:0 0 8px} h2{font-size:21px} p{line-height:1.5}
+label{display:block;font-weight:600;margin:10px 0 6px}
+input,select{width:100%;padding:12px;border:1px solid #ccd3df;border-radius:9px;font-size:16px}
+button{border:0;border-radius:10px;padding:12px 18px;font-size:16px;font-weight:700;cursor:pointer;background:#2457d6;color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.top{position:sticky;top:0;z-index:10;background:#172033;color:#fff;padding:12px 16px;border-radius:0 0 12px 12px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.timer{font-weight:800;font-size:18px}
+.progress{height:8px;background:#e5e9f1;border-radius:99px;overflow:hidden;margin:10px 0 20px}
+.progress>div{height:100%;background:#2457d6;width:0}
+.qnum{font-size:13px;font-weight:700;color:#52627a}
+.option{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #d9deea;border-radius:10px;margin:9px 0;cursor:pointer}
+.option:hover{background:#f6f8fc}
+.option input{width:auto;margin-top:4px}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.hidden{display:none}
+.result{text-align:center}
+.score{font-size:44px;font-weight:800;margin:10px 0}
+.small{font-size:13px;color:#61708a}
+.warn{background:#fff4d6;border-left:4px solid #e0a400;padding:12px;border-radius:8px}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#e9efff;color:#2457d6;font-size:12px;font-weight:700}
+@media(max-width:600px){.container{padding:10px}.card{padding:16px}h1{font-size:22px}.actions button{flex:1}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div><strong>BBA MIC101</strong><br><span class="small" style="color:#cbd5e1">Fundamentals of Entrepreneurship</span></div>
+  <div class="timer" id="timer">15:00</div>
+</div>
+
+<div class="container">
+  <section id="start" class="card">
+    <h1>Live Quiz</h1>
+    <p><span class="badge">10 Sets</span> &nbsp; <span class="badge">10 MCQs per Set</span> &nbsp; <span class="badge">15 Minutes</span></p>
+    <p>Each group has a different set. Questions are based on the prescribed syllabus and no question is repeated across the 10 sets.</p>
+    <div class="warn"><strong>Important:</strong> The timer starts when you click “Start Quiz”. One attempt is allowed for each set on the same browser/device.</div>
+    <label for="name">Student Name</label>
+    <input id="name" placeholder="Enter your name">
+    <label for="roll">Roll Number</label>
+    <input id="roll" placeholder="Enter your roll number">
+    <label for="set">Select Assigned Group / Set</label>
+    <select id="set">
+      <option value="">Select your set</option>
+      <option value="1">Group 1 – Set 1</option>
+      <option value="2">Group 2 – Set 2</option>
+      <option value="3">Group 3 – Set 3</option>
+      <option value="4">Group 4 – Set 4</option>
+      <option value="5">Group 5 – Set 5</option>
+      <option value="6">Group 6 – Set 6</option>
+      <option value="7">Group 7 – Set 7</option>
+      <option value="8">Group 8 – Set 8</option>
+      <option value="9">Group 9 – Set 9</option>
+      <option value="10">Group 10 – Set 10</option>
+    </select>
+    <br><br>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <span id="studentInfo"></span><span id="setInfo"></span>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+      <div id="questionArea"></div>
+      <div class="actions">
+        <button id="prevBtn" onclick="prevQuestion()">Previous</button>
+        <button id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button id="submitBtn" class="hidden" onclick="submitQuiz()">Submit Quiz</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="card result hidden">
+    <h1>Quiz Submitted</h1>
+    <div class="score" id="score"></div>
+    <p id="resultText"></p>
+    <p class="small">Your result is calculated automatically on this device.</p>
+  </section>
+</div>
+
+<script>
+const QUIZ_DATA = {"1":[{"unit":"U1","question":"Which statement best describes entrepreneurship?","options":["The routine supervision of existing employees","The preparation of annual financial statements","The purchase of shares for personal investment","The process of identifying opportunities and creating value"],"answer":"D"},{"unit":"U1","question":"John Kao’s model of entrepreneurship is mainly associated with understanding the entrepreneurial process through creativity, opportunity and action.","options":["Tax computation","Auditing standards","The entrepreneurial process","Inventory control"],"answer":"C"},{"unit":"U1","question":"Which activity comes first when evaluating a new business opportunity?","options":["Declaring dividends","Assessing the opportunity and its feasibility","Hiring a large workforce","Opening several branches"],"answer":"B"},{"unit":"U2","question":"Which practice is most likely to stimulate creativity in an organization?","options":["Encouraging new ideas and allowing experimentation","Rejecting unusual suggestions immediately","Using only one approved method","Avoiding team discussion"],"answer":"A"},{"unit":"U2","question":"Which factor can hinder creativity at the organizational level?","options":["Open communication","Supportive leadership","Freedom to suggest ideas","Excessive bureaucracy and fear of failure"],"answer":"D"},{"unit":"U2","question":"What is a major role of a creative team?","options":["Avoid different viewpoints","Focus only on routine tasks","Generate and develop alternative ideas","Eliminate all experimentation"],"answer":"C"},{"unit":"U3","question":"Which form of ownership is generally owned and controlled by one individual?","options":["Limited liability partnership","Sole proprietorship","Partnership","Corporation"],"answer":"B"},{"unit":"U3","question":"A partnership is normally formed by:","options":["Two or more persons agreeing to carry on a business together","One shareholder only","A government department","Only corporate employees"],"answer":"A"},{"unit":"U4","question":"A franchise arrangement generally involves:","options":["Complete independence from the franchisor","Purchase of government shares","A merger between two unrelated firms","Use of an established business model and brand under agreed terms"],"answer":"D"},{"unit":"U4","question":"Which is an advantage of franchising for a franchisee?","options":["No financial investment","Guaranteed profits in every case","Access to an established brand and business system","Complete freedom from franchise rules"],"answer":"C"}],"2":[{"unit":"U1","question":"Which of the following is an important characteristic of an entrepreneur?","options":["Dependence on routine procedures","Refusal to make decisions","Ability to recognize and act on opportunities","Avoidance of all uncertainty"],"answer":"C"},{"unit":"U1","question":"Idea generation in entrepreneurship refers to:","options":["Closing an existing venture","Developing possible concepts for products, services or businesses","Preparing only tax returns","Recording past sales"],"answer":"B"},{"unit":"U1","question":"Strategic planning primarily helps a business to:","options":["Set direction and decide how objectives will be achieved","Eliminate the need for decisions","Guarantee profits","Avoid evaluating performance"],"answer":"A"},{"unit":"U2","question":"Which managerial action can encourage positive creativity?","options":["Punishing every failed experiment","Restricting communication","Discouraging collaboration","Providing resources and recognition for useful ideas"],"answer":"D"},{"unit":"U2","question":"Innovation in business is best understood as:","options":["Repeating an old process unchanged","Avoiding customer feedback","Implementing useful new or improved ideas","Simply having many ideas without action"],"answer":"C"},{"unit":"U2","question":"A manager who accepts constructive disagreement is likely to:","options":["Prevent innovation","Support a wider range of creative ideas","Reduce idea generation","Eliminate teamwork"],"answer":"B"},{"unit":"U3","question":"Which form of ownership is a separate legal entity from its owners?","options":["Corporation","Sole proprietorship","Traditional partnership","Informal business group"],"answer":"A"},{"unit":"U3","question":"One important feature of an LLP is:","options":["Unlimited liability for every partner in all circumstances","Ownership by one person only","No formal business agreement","Limited liability with a partnership-based structure"],"answer":"D"},{"unit":"U4","question":"Which document normally sets out important rights and obligations in a franchise relationship?","options":["Employee attendance sheet","Sales advertisement","Franchise contract","Personal diary"],"answer":"C"},{"unit":"U4","question":"Before buying a franchise, an entrepreneur should primarily:","options":["Avoid checking financial requirements","Evaluate the franchisor, costs, terms and business potential","Ignore the franchise agreement","Assume success is guaranteed"],"answer":"B"}],"3":[{"unit":"U1","question":"Opportunity identification involves:","options":["Closing communication channels","Recognizing an unmet need or promising market possibility","Copying every competitor without analysis","Avoiding customer problems"],"answer":"B"},{"unit":"U1","question":"Building the team in a new venture mainly requires:","options":["Selecting people with complementary skills and suitable roles","Selecting people with identical skills only","Avoiding delegation","Keeping all responsibilities with one person"],"answer":"A"},{"unit":"U1","question":"Which is a useful step in strategic planning?","options":["Ignoring the external environment","Avoiding resource allocation","Rejecting performance review","Defining objectives"],"answer":"D"},{"unit":"U2","question":"Which workplace condition is most supportive of creativity?","options":["Rigid approval for every minor idea","No interaction among employees","Psychological freedom to suggest and discuss ideas","Fear of criticism"],"answer":"C"},{"unit":"U2","question":"Creative problem solving generally begins with:","options":["Rejecting alternatives","Understanding and defining the problem","Choosing a solution before identifying the problem","Avoiding information"],"answer":"B"},{"unit":"U2","question":"Sources of innovation in business can include:","options":["Customers, employees, competitors and technological change","Only the finance department","Only government offices","Only existing shareholders"],"answer":"A"},{"unit":"U3","question":"Which ownership form typically combines partnership characteristics with limited liability?","options":["Sole proprietorship","Informal association","Single-owner corporation","Limited liability partnership"],"answer":"D"},{"unit":"U3","question":"An advantage of sole proprietorship is:","options":["Perpetual succession in every case","Complete separation of owner and business","Simple formation and direct control","Unlimited access to public capital markets"],"answer":"C"},{"unit":"U4","question":"Which is a possible disadvantage of franchising for a franchisee?","options":["Established operating procedures","Restrictions imposed by the franchisor","Access to an established brand","Training support"],"answer":"B"},{"unit":"U4","question":"Managing growth in an entrepreneurial venture requires:","options":["Planning resources, capacity and organizational systems","Increasing sales without considering capacity","Avoiding delegation","Ignoring cash requirements"],"answer":"A"}],"4":[{"unit":"U1","question":"Which activity is part of entrepreneurial management?","options":["Planning, organizing and directing entrepreneurial resources","Only maintaining attendance records","Only preparing payroll","Only purchasing office furniture"],"answer":"A"},{"unit":"U1","question":"Strategic planning differs from day-to-day routine because it focuses mainly on:","options":["Only daily attendance","Only petty cash","Only office maintenance","Long-term direction and major choices"],"answer":"D"},{"unit":"U1","question":"When evaluating an opportunity, market demand is important because it helps determine:","options":["Whether the office needs new chairs","Whether tax forms can be avoided","Whether customers are likely to value and buy the offering","Whether employees need uniforms"],"answer":"C"},{"unit":"U2","question":"Which statement about creativity and innovation is correct?","options":["Creativity is limited to advertising","Creativity generates ideas, while innovation involves applying useful ideas","They always mean exactly the same thing","Innovation requires no implementation"],"answer":"B"},{"unit":"U2","question":"A creative team is more effective when members:","options":["Bring diverse perspectives and collaborate constructively","Avoid sharing information","Reject every alternative","Work without a common objective"],"answer":"A"},{"unit":"U2","question":"Managing organizations for innovation often requires:","options":["Eliminating all risk-taking","Preventing cross-functional work","Rewarding only routine behaviour","Supporting experimentation and learning"],"answer":"D"},{"unit":"U3","question":"Which ownership form generally involves owners sharing profits according to their agreement?","options":["Public authority","Franchise outlet","Partnership","Sole proprietorship only"],"answer":"C"},{"unit":"U3","question":"A key disadvantage of partnership can be:","options":["Possibility of specialization","Potential disputes among partners","Ability to combine skills","Shared resources"],"answer":"B"},{"unit":"U4","question":"The franchisor is the party that generally:","options":["Provides the brand, business system or rights under the franchise arrangement","Only purchases products from the franchisee","Works as an employee of the franchisee","Has no role after signing the agreement"],"answer":"A"},{"unit":"U4","question":"A franchise evaluation checklist is useful for examining:","options":["Only the logo colour","Only the shop location","Only employee uniforms","Costs, support, obligations, market and contractual terms"],"answer":"D"}],"5":[{"unit":"U1","question":"An entrepreneur is most likely to identify an opportunity by:","options":["Ignoring changes in customer needs","Avoiding market information","Following only internal routines","Observing customer problems and market gaps"],"answer":"D"},{"unit":"U1","question":"Why is leadership important in entrepreneurship?","options":["It guarantees customer loyalty","It eliminates all business risks","It helps align and motivate people toward venture goals","It removes the need for planning"],"answer":"C"},{"unit":"U1","question":"Which sequence best represents strategic planning?","options":["Buy equipment, pay taxes, close business, plan","Set objectives, analyze situation, formulate strategy, implement and review","Hire employees, close business, set objectives, advertise","Advertise, borrow money, ignore objectives, review"],"answer":"B"},{"unit":"U2","question":"Which organizational action can enhance creativity?","options":["Providing autonomy within clear objectives","Micromanaging every task","Discouraging questions","Rewarding conformity only"],"answer":"A"},{"unit":"U2","question":"Positive creativity in business is most useful when ideas are:","options":["Random and impossible to implement","Kept secret from everyone","Unrelated to organizational needs","Relevant, feasible and capable of creating value"],"answer":"D"},{"unit":"U2","question":"A manager responsible for innovation should encourage:","options":["Silence during meetings","Avoidance of customer feedback","Learning from both successful and unsuccessful experiments","Only projects that can never fail"],"answer":"C"},{"unit":"U3","question":"Which form of business is generally easiest to establish among the options?","options":["Complex corporate group","Sole proprietorship","Corporation","Large public company"],"answer":"B"},{"unit":"U3","question":"One limitation of sole proprietorship is:","options":["The owner may face unlimited business liability","The owner has no control","It cannot have customers","It cannot earn profits"],"answer":"A"},{"unit":"U4","question":"A franchisee is generally:","options":["The government regulator","The franchisor’s auditor","A shareholder in every corporation","The party operating the franchised business under the franchisor’s agreed system"],"answer":"D"},{"unit":"U4","question":"Which factor is especially important when financing a franchise venture?","options":["Only the founder’s age","Only the number of employees","Initial investment and ongoing franchise-related costs","Only the colour of the premises"],"answer":"C"}],"6":[{"unit":"U1","question":"Which statement best explains entrepreneurial opportunity evaluation?","options":["It requires no market research","It focuses only on the entrepreneur’s preferences","It examines feasibility, market potential, resources and risks","It means accepting every business idea"],"answer":"C"},{"unit":"U1","question":"Team building in entrepreneurship is important because:","options":["Teams guarantee success","Different skills can be combined to accomplish venture objectives","One person must perform every function","Teams eliminate the need for leadership"],"answer":"B"},{"unit":"U1","question":"Which is an example of strategic planning?","options":["Choosing a target market and deciding how the venture will compete","Recording yesterday’s cash sales","Arranging office files","Checking attendance"],"answer":"A"},{"unit":"U2","question":"Creativity can be stimulated when employees are encouraged to:","options":["Follow instructions without thinking","Avoid collaboration","Reject all unusual ideas","Question existing methods and propose alternatives"],"answer":"D"},{"unit":"U2","question":"Which is an example of a source of innovation?","options":["An unchanged attendance register","A routine filing procedure","Customer feedback revealing an unmet need","A fixed office seating plan"],"answer":"C"},{"unit":"U2","question":"What can managerial support for creativity include?","options":["Avoidance of experimentation","Time, resources, encouragement and recognition","Punishment for all new ideas","Complete isolation of employees"],"answer":"B"},{"unit":"U3","question":"Which ownership form usually has a formal agreement among partners defining their relationship?","options":["Partnership","Sole proprietorship","Individual employment","Customer cooperative purchase"],"answer":"A"},{"unit":"U3","question":"A major advantage of a corporation is:","options":["No legal identity","Automatic unlimited liability of all customers","No ownership structure","Separate legal identity and potential for raising capital"],"answer":"D"},{"unit":"U4","question":"Franchise contracts are important because they:","options":["Replace all business planning","Eliminate the need for financing","Specify the rights, duties, fees and operating conditions of the parties","Guarantee that no rules will apply"],"answer":"C"},{"unit":"U4","question":"Which approach is most appropriate for managing venture growth?","options":["Ignore cash flow","Match expansion with financial, human and operational capacity","Expand without assessing resources","Open locations without planning"],"answer":"B"}],"7":[{"unit":"U1","question":"The evolution of entrepreneurship reflects a shift toward viewing entrepreneurs as people who:","options":["Only supervise routine clerical work","Create value by recognizing opportunities and organizing resources","Only manage government departments","Only lend money to businesses"],"answer":"B"},{"unit":"U1","question":"Which question is most relevant to opportunity evaluation?","options":["Who are the target customers and what need will be solved?","What colour should every employee wear?","How can market information be avoided?","Why should competitors be ignored?"],"answer":"A"},{"unit":"U1","question":"Effective entrepreneurial leadership involves:","options":["Avoiding decisions","Preventing employee participation","Keeping goals unclear","Communicating a vision and coordinating people toward goals"],"answer":"D"},{"unit":"U2","question":"Which factor is likely to hinder organizational creativity?","options":["Supportive leadership","Diverse teams","Fear of criticism and failure","Open communication"],"answer":"C"},{"unit":"U2","question":"Innovation management focuses on:","options":["Maintaining every process unchanged","Turning promising ideas into useful products, services or processes","Generating ideas without implementation","Avoiding change"],"answer":"B"},{"unit":"U2","question":"Why can diversity help creative teams?","options":["Different perspectives can increase the range of possible solutions","It guarantees agreement on every issue","It removes the need for communication","It prevents new ideas"],"answer":"A"},{"unit":"U3","question":"Which ownership form is based on a single owner rather than multiple partners?","options":["Partnership","LLP","Corporation with multiple shareholders","Sole proprietorship"],"answer":"D"},{"unit":"U3","question":"Limited liability generally means that:","options":["Businesses have no debts","Creditors cannot make any claims against the business","Owners’ personal financial exposure is limited according to the legal form and applicable law","Owners can never lose any money"],"answer":"C"},{"unit":"U4","question":"A franchisee usually pays fees in return for:","options":["A government licence for all businesses","Specified rights to use the franchisor’s brand or business system","Ownership of the franchisor itself","Automatic ownership of all competing brands"],"answer":"B"},{"unit":"U4","question":"A major benefit of franchising to a franchisor can be:","options":["Expansion using franchisees’ investment and operating efforts","Complete elimination of quality control","No need to support franchisees","Guaranteed success of every outlet"],"answer":"A"}],"8":[{"unit":"U1","question":"Which of the following best represents entrepreneurial thinking?","options":["Looking for opportunities and solutions rather than only problems","Avoiding all change","Rejecting customer feedback","Depending entirely on established routines"],"answer":"A"},{"unit":"U1","question":"Why is idea generation important to entrepreneurs?","options":["It guarantees that every idea will succeed","It removes the need for evaluation","It replaces all strategic planning","It creates a pool of alternatives that can be screened for opportunities"],"answer":"D"},{"unit":"U1","question":"A strategic plan should help an entrepreneur decide:","options":["Only when employees take lunch","Only how to arrange office furniture","Where the venture wants to go and how it intends to get there","Only what stationery to buy"],"answer":"C"},{"unit":"U2","question":"Which activity can improve creative thinking?","options":["Rejecting ideas before discussion","Brainstorming several possible solutions before selecting one","Selecting the first idea immediately","Avoiding questions"],"answer":"B"},{"unit":"U2","question":"Which statement about managerial responsibilities for creativity is most appropriate?","options":["Managers should create conditions in which useful ideas can be explored","Managers should eliminate all experimentation","Managers should discourage employee suggestions","Managers should reward only repetition"],"answer":"A"},{"unit":"U2","question":"An organization that wants positive creativity should:","options":["Accept every idea without evaluation","Ignore feasibility","Avoid implementation","Connect new ideas with organizational goals and customer needs"],"answer":"D"},{"unit":"U3","question":"Which form of ownership normally allows two or more owners to combine resources?","options":["Single-member employment","Individual consultancy only","Partnership","Sole proprietorship"],"answer":"C"},{"unit":"U3","question":"A corporation is generally characterized by:","options":["Absence of formal governance","Separate legal personality and ownership through shares or other corporate interests","No distinction between business and owners","Ownership by only one employee"],"answer":"B"},{"unit":"U4","question":"Which is a potential advantage of a franchise for the customer-facing entrepreneur?","options":["Access to an established operating format and brand recognition","Freedom to ignore all brand standards","No contractual obligations","No need for working capital"],"answer":"A"},{"unit":"U4","question":"Why should a franchise contract be carefully reviewed?","options":["It only contains the brand logo","It has no effect on operations","It automatically guarantees profit","It may define fees, territory, standards, renewal and termination conditions"],"answer":"D"}],"9":[{"unit":"U1","question":"Which activity helps an entrepreneur move from an idea toward a viable opportunity?","options":["Keeping the idea completely unexamined","Avoiding competitors","Ignoring costs","Testing the idea against customer needs and market conditions"],"answer":"D"},{"unit":"U1","question":"Strategic planning is valuable because it:","options":["Eliminates competition","Removes the need for adaptation","Provides a framework for coordinated decisions and actions","Makes all future events certain"],"answer":"C"},{"unit":"U1","question":"An entrepreneurial leader should delegate tasks mainly to:","options":["Keep all decisions secret","Use team members’ skills effectively and build organizational capacity","Avoid responsibility completely","Prevent employees from learning"],"answer":"B"},{"unit":"U2","question":"Which workplace practice is most likely to reduce creativity?","options":["Punishing employees for proposing unconventional ideas","Encouraging discussion","Recognizing useful suggestions","Allowing experimentation"],"answer":"A"},{"unit":"U2","question":"A source of innovation arising from technology is:","options":["A fixed organizational chart","An unchanged attendance rule","A standard office timetable","A new digital tool that enables a better way to serve customers"],"answer":"D"},{"unit":"U2","question":"What is the main purpose of managing innovation?","options":["To generate ideas with no selection","To remove customer involvement","To develop, implement and support valuable new ideas","To prevent all organizational change"],"answer":"C"},{"unit":"U3","question":"Which form of ownership can make continuity less dependent on the life of one owner?","options":["Personal consultancy","Corporation","Sole proprietorship","Informal sole trader arrangement"],"answer":"B"},{"unit":"U3","question":"One possible advantage of partnership is:","options":["Combining the skills and resources of several partners","Eliminating all disagreements","Guaranteeing limited liability in every partnership","Removing the need for an agreement"],"answer":"A"},{"unit":"U4","question":"Which party generally develops and owns the franchise system or brand?","options":["Franchisee","Customer","Employee","Franchisor"],"answer":"D"},{"unit":"U4","question":"A franchise evaluation should include checking:","options":["Only the logo","Only the number of social-media followers","The franchise model, financial requirements, support and contractual obligations","Only the advertisement"],"answer":"C"}],"10":[{"unit":"U1","question":"Which statement best captures the role of an entrepreneur in a new venture?","options":["Only supervising routine office work","Only investing in government securities","Recognizing an opportunity and organizing resources to create value","Only performing accounting entries"],"answer":"C"},{"unit":"U1","question":"Which factor should be considered before selecting a business opportunity?","options":["Only the number of competitors","Customer demand and the venture’s ability to deliver value","Only the entrepreneur’s personal preference","Only the size of the office"],"answer":"B"},{"unit":"U1","question":"Why are clear objectives important in strategic planning?","options":["They provide targets against which strategies and performance can be assessed","They eliminate uncertainty completely","They remove the need for resources","They prevent changes in strategy"],"answer":"A"},{"unit":"U2","question":"Which statement correctly distinguishes creativity from innovation?","options":["Creativity means accounting; innovation means auditing","They are unrelated to entrepreneurship","Innovation occurs only in manufacturing","Creativity is associated with generating ideas; innovation involves putting valuable ideas into practice"],"answer":"D"},{"unit":"U2","question":"A manager can encourage creative employees by:","options":["Creating fear of mistakes","Preventing collaboration","Providing autonomy, support and constructive feedback","Rejecting all new approaches"],"answer":"C"},{"unit":"U2","question":"Which is a likely result of effective creative teamwork?","options":["Elimination of innovation","More varied approaches to solving business problems","Less exchange of ideas","Complete avoidance of disagreement"],"answer":"B"},{"unit":"U3","question":"Which ownership form generally involves a business owned and managed by one person?","options":["Sole proprietorship","Partnership","Corporation","LLP"],"answer":"A"},{"unit":"U3","question":"Which form can provide limited liability while retaining partnership-style participation?","options":["Sole proprietorship","Traditional unlimited-liability partnership","Informal association","Limited liability partnership"],"answer":"D"},{"unit":"U4","question":"Which statement best describes a franchisee’s relationship with a franchisor?","options":["The franchisee has no contractual duties","The franchisee can automatically change the business model","The franchisee operates under agreed brand and business standards","The franchisee becomes the legal owner of the franchisor"],"answer":"C"},{"unit":"U4","question":"Which factor is important when planning the growth of an entrepreneurial venture?","options":["Only the size of the founder’s office","Availability of finance, people and operational capacity","Only the desire to expand","Only the number of competitors"],"answer":"B"}]};
+let currentSet = null, questions = [], current = 0, answers = [], timerSeconds = 900, timerId = null;
+
+function storageKey() {
+  return "bba_mic101_attempt_set_" + currentSet;
+}
+
+function startQuiz() {
+  const name = document.getElementById("name").value.trim();
+  const roll = document.getElementById("roll").value.trim();
+  const setNo = document.getElementById("set").value;
+  if (!name || !roll || !setNo) {
+    alert("Please enter your name, roll number and assigned set.");
+    return;
+  }
+  currentSet = Number(setNo);
+  if (localStorage.getItem(storageKey())) {
+    alert("An attempt for this set has already been recorded on this browser/device.");
+    return;
+  }
+  questions = QUIZ_DATA[currentSet];
+  answers = Array(questions.length).fill(null);
+  current = 0;
+  document.getElementById("studentInfo").textContent = name + " | Roll: " + roll;
+  document.getElementById("setInfo").textContent = "Group " + currentSet + " – Set " + currentSet;
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  renderQuestion();
+  timerSeconds = 900;
+  updateTimer();
+  timerId = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    if (timerSeconds <= 0) {
+      clearInterval(timerId);
+      submitQuiz(true);
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const m = String(Math.floor(timerSeconds / 60)).padStart(2,"0");
+  const s = String(timerSeconds % 60).padStart(2,"0");
+  document.getElementById("timer").textContent = m + ":" + s;
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  const area = document.getElementById("questionArea");
+  area.innerHTML = `
+    <div class="qnum">Question ${current+1} of ${questions.length} • ${q.unit}</div>
+    <h2>${escapeHtml(q.question)}</h2>
+    ${q.options.map((opt,i) => `
+      <label class="option">
+        <input type="radio" name="answer" value="${i}" ${answers[current]===i ? "checked" : ""} onchange="answers[current]=Number(this.value)">
+        <span><strong>${"ABCD"[i]}.</strong> ${escapeHtml(opt)}</span>
+      </label>`).join("")}
+  `;
+  document.getElementById("prevBtn").disabled = current === 0;
+  document.getElementById("nextBtn").classList.toggle("hidden", current === questions.length-1);
+  document.getElementById("submitBtn").classList.toggle("hidden", current !== questions.length-1);
+  document.getElementById("bar").style.width = (((current+1)/questions.length)*100) + "%";
+}
+
+function nextQuestion() {
+  if (current < questions.length-1) {
+    current++;
+    renderQuestion();
+  }
+}
+function prevQuestion() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+}
+
+function submitQuiz(auto=false) {
+  if (!auto && answers.includes(null)) {
+    if (!confirm("Some questions are unanswered. Do you want to submit anyway?")) return;
+  }
+  clearInterval(timerId);
+  let score = 0;
+  questions.forEach((q,i) => {
+    if (answers[i] !== null && "ABCD"[answers[i]] === q.answer) score++;
+  });
+  const name = document.getElementById("name").value.trim();
+  const roll = document.getElementById("roll").value.trim();
+  localStorage.setItem(storageKey(), JSON.stringify({name,roll,score,total:questions.length,submittedAt:new Date().toISOString()}));
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("score").textContent = score + " / " + questions.length;
+  document.getElementById("resultText").textContent = auto
+    ? "Time is over. Your quiz was submitted automatically."
+    : "Well done, " + name + ". Your quiz has been submitted.";
+  window.scrollTo(0,0);
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+</script>
+</body>
+</html>
